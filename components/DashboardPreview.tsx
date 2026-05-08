@@ -1,6 +1,6 @@
 export default function DashboardPreview() {
   return (
-    <section className="py-24 bg-slate-100">
+    <section className="py-24 bg-white/30 backdrop-blur-md border-b border-white/30">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <p className="text-green-700 uppercase tracking-[0.2em] font-semibold">
@@ -19,7 +19,7 @@ export default function DashboardPreview() {
             </h3>
 
             <div className="space-y-4">
-              {[1,2,3].map((i)=>(
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="border border-slate-200 rounded-2xl p-5 flex justify-between">
                   <div>
                     <h4 className="font-semibold">
@@ -49,7 +49,7 @@ export default function DashboardPreview() {
                 "Engineer Allocation",
                 "Reports",
                 "Performance",
-              ].map((item)=>(
+              ].map((item) => (
                 <div key={item} className="bg-slate-100 rounded-2xl p-8 text-center font-semibold">
                   {item}
                 </div>

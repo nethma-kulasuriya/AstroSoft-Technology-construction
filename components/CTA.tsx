@@ -1,6 +1,6 @@
 export default function CTA() {
   return (
-    <section className="py-24 bg-green-900 text-white">
+    <section className="py-24 bg-green-950/60 backdrop-blur-xl border-b border-white/10 text-white">
       <div className="max-w-5xl mx-auto px-6 text-center">
         <h2 className="text-5xl font-bold leading-tight">
           Ready to Modernize Your Maintenance Workflow?

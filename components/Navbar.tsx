@@ -7,10 +7,11 @@ export default function Navbar() {
         </h1>
 
         <div className="hidden md:flex gap-8 text-slate-700">
-          <a href="#">Home</a>
-          <a href="#">Services</a>
+          <a href="/">Home</a>
+          <a href="/#services">Services</a>
           <a href="/customer">Customer</a>
           <a href="/admin">Admin</a>
+          <a href="/engineer">Engineer</a>
         </div>
 
         <a

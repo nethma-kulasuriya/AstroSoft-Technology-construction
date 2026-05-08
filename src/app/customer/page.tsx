@@ -1,8 +1,38 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mockIssues } from "@/src/lib/mock-data";
 import { MessageSquare, Clock, AlertTriangle, PlusCircle } from "lucide-react";
+import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
+
+const activeIssuesData = [
+  { name: 'Mon', value: 4 },
+  { name: 'Tue', value: 3 },
+  { name: 'Wed', value: 5 },
+  { name: 'Thu', value: 2 },
+  { name: 'Fri', value: 2 },
+  { name: 'Sat', value: 1 },
+  { name: 'Sun', value: 2 },
+];
+
+const inProgressData = [
+  { name: 'Mon', value: 1 },
+  { name: 'Tue', value: 2 },
+  { name: 'Wed', value: 1 },
+  { name: 'Thu', value: 3 },
+  { name: 'Fri', value: 2 },
+  { name: 'Sat', value: 1 },
+  { name: 'Sun', value: 1 },
+];
+
+const resolvedData = [
+  { name: 'Week 1', value: 1 },
+  { name: 'Week 2', value: 2 },
+  { name: 'Week 3', value: 0 },
+  { name: 'Week 4', value: 2 },
+];
 
 export default function CustomerDashboard() {
   const myIssues = mockIssues.filter(issue => issue.reporterId === "u1");
@@ -27,8 +57,19 @@ export default function CustomerDashboard() {
             <AlertTriangle className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">2</div>
-            <p className="text-xs text-muted-foreground mt-1">Issues currently open</p>
+            <div className="flex justify-between items-end">
+              <div>
+                <div className="text-2xl font-bold text-primary">2</div>
+                <p className="text-xs text-muted-foreground mt-1">Issues currently open</p>
+              </div>
+              <div className="h-[40px] w-[80px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={activeIssuesData}>
+                    <Line type="monotone" dataKey="value" stroke="#16a34a" strokeWidth={2} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </CardContent>
         </Card>
         <Card className="hover:border-primary/50 transition-colors">
@@ -37,8 +78,19 @@ export default function CustomerDashboard() {
             <Clock className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-500">1</div>
-            <p className="text-xs text-muted-foreground mt-1">Being worked on by engineers</p>
+            <div className="flex justify-between items-end">
+              <div>
+                <div className="text-2xl font-bold text-blue-500">1</div>
+                <p className="text-xs text-muted-foreground mt-1">Being worked on</p>
+              </div>
+              <div className="h-[40px] w-[80px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={inProgressData}>
+                    <Bar dataKey="value" fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </CardContent>
         </Card>
         <Card className="hover:border-primary/50 transition-colors">
@@ -47,8 +99,19 @@ export default function CustomerDashboard() {
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground mt-1">Successfully closed issues</p>
+            <div className="flex justify-between items-end">
+              <div>
+                <div className="text-2xl font-bold">5</div>
+                <p className="text-xs text-muted-foreground mt-1">Successfully closed</p>
+              </div>
+              <div className="h-[40px] w-[80px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={resolvedData}>
+                    <Line type="step" dataKey="value" stroke="#64748b" strokeWidth={2} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

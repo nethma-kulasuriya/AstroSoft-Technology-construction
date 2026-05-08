@@ -5,17 +5,21 @@ import HowItWorks from "@/components/HowItWorks";
 import DashboardPreview from "@/components/DashboardPreview";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
+import DynamicBackground from "@/components/DynamicBackground";
 
 export default function Home() {
   return (
-    <main className="bg-slate-50">
-      <Navbar />
-      <Hero />
-      <Services />
-      <HowItWorks />
-      <DashboardPreview />
-      <CTA />
-      <Footer />
+    <main className="relative bg-slate-50 min-h-screen">
+      <DynamicBackground />
+      <div className="relative z-10">
+        <Navbar />
+        <Hero />
+        <Services />
+        <HowItWorks />
+        <DashboardPreview />
+        <CTA />
+        <Footer />
+      </div>
     </main>
   );
 }
