@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { mockIssues } from "@/src/lib/mock-data";
 import { AlertTriangle, PlusCircle, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { PieChart, Pie, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 
 export default function CustomerDashboard() {
   const [allIssues, setAllIssues] = useState([]);
@@ -23,6 +24,40 @@ export default function CustomerDashboard() {
     return () => window.removeEventListener('storage', loadData);
   }, []);
 
+  // Logic for Personal Progress Stats
+  const totalMyIssues = allIssues.length;
+  const getPercentage = (value: number) => {
+    if (totalMyIssues === 0) return 0;
+    return ((value / totalMyIssues) * 100).toFixed(1);
+  };
+
+  const chartConfigs = [
+    {
+      name: "My Total",
+      value: totalMyIssues,
+      color: "#6366f1", // Indigo
+      data: [{ name: "Total", value: totalMyIssues }, { name: "Other", value: 0 }]
+    },
+    {
+      name: "Active",
+      value: allIssues.filter(i => i.status === "Open" || i.status === "In Progress" || i.status === "Assigned").length,
+      color: "#3b82f6", // Blue
+      data: [
+        { name: "Active", value: allIssues.filter(i => i.status === "Open" || i.status === "In Progress" || i.status === "Assigned").length },
+        { name: "Remaining", value: totalMyIssues - allIssues.filter(i => i.status === "Open" || i.status === "In Progress" || i.status === "Assigned").length }
+      ]
+    },
+    {
+      name: "Resolved",
+      value: allIssues.filter(i => i.status === "Resolved").length,
+      color: "#22c55e", // Green
+      data: [
+        { name: "Resolved", value: allIssues.filter(i => i.status === "Resolved").length },
+        { name: "Remaining", value: totalMyIssues - allIssues.filter(i => i.status === "Resolved").length }
+      ]
+    }
+  ];
+
   return (
     <div className="space-y-6 p-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -32,36 +67,51 @@ export default function CustomerDashboard() {
         </div>
 
         <Link href="/customer/report-issue">
-          <Button className="gap-2 shadow-sm bg-green-700 hover:bg-green-800 text-white">
+          <Button className="gap-2 shadow-sm bg-green-700 hover:bg-green-800 text-white font-semibold">
             <PlusCircle className="h-4 w-4" />
             Report New Issue
           </Button>
         </Link>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Issues</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">
-              {allIssues.filter(i => i.status === "Open" || i.status === "In Progress" || i.status === "Assigned").length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Resolved</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-500">
-              {allIssues.filter(i => i.status === "Resolved").length}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Interactive Personal Progress Charts */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {chartConfigs.map((config) => (
+          <Card key={config.name} className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-0 text-center">
+              <CardTitle className="text-sm font-medium">{config.name} Requests</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 flex flex-col items-center">
+              <div className="h-[140px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Tooltip
+                      formatter={(value: number) => [`${getPercentage(value)}%`, config.name]}
+                      contentStyle={{ borderRadius: '12px', border: 'none' }}
+                    />
+                    <Pie
+                      data={config.data}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={35}
+                      outerRadius={55}
+                      paddingAngle={5}
+                      dataKey="value"
+                      animationDuration={1500}
+                    >
+                      <Cell fill={config.color} />
+                      <Cell fill="#f1f5f9" />
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="text-center mt-2">
+                <div className="text-2xl font-bold" style={{ color: config.color }}>{config.value}</div>
+                <p className="text-xs text-muted-foreground">{getPercentage(config.value)}% of Total Requests</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <h2 className="text-xl font-semibold mt-8 mb-4">Your Recent Issues</h2>

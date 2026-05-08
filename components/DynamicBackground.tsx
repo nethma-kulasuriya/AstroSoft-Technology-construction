@@ -22,7 +22,7 @@ export default function DynamicBackground() {
       <div
         className="absolute inset-[-5%] w-[110%] h-[110%] bg-cover bg-center bg-no-repeat opacity-100 transition-transform duration-300 ease-out"
         style={{
-          backgroundImage: `url('/bg2.avif')`,
+          backgroundImage: `url('/bg3.jpg')`,
           transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
         }}
       />
