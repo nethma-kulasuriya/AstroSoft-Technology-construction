@@ -5,49 +5,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mockIssues } from "@/src/lib/mock-data";
-import { MessageSquare, Clock, AlertTriangle, PlusCircle } from "lucide-react";
-import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { AlertTriangle, PlusCircle, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-
-// Chart Data Definitions
-const activeIssuesData = [
-  { name: 'Mon', value: 4 },
-  { name: 'Tue', value: 3 },
-  { name: 'Wed', value: 5 },
-  { name: 'Thu', value: 2 },
-  { name: 'Fri', value: 2 },
-  { name: 'Sat', value: 1 },
-  { name: 'Sun', value: 2 },
-];
-
-const inProgressData = [
-  { name: 'Mon', value: 1 },
-  { name: 'Tue', value: 2 },
-  { name: 'Wed', value: 1 },
-  { name: 'Thu', value: 3 },
-  { name: 'Fri', value: 2 },
-  { name: 'Sat', value: 1 },
-  { name: 'Sun', value: 1 },
-];
-
-const resolvedData = [
-  { name: 'Week 1', value: 1 },
-  { name: 'Week 2', value: 2 },
-  { name: 'Week 3', value: 0 },
-  { name: 'Week 4', value: 2 },
-];
 
 export default function CustomerDashboard() {
   const [allIssues, setAllIssues] = useState([]);
 
-  useEffect(() => {
-    // 1. Get the demo issues from storage
+  const loadData = () => {
     const storedIssues = JSON.parse(localStorage.getItem("demo_issues") || "[]");
-
-    // 2. Merge with static mock data and filter for current user "u1"
-    const combined = [...storedIssues, ...mockIssues].filter(issue => issue.reporterId === "u1");
-
+    const combined = [...storedIssues, ...mockIssues].filter(i => i.reporterId === "u1");
     setAllIssues(combined);
+  };
+
+  useEffect(() => {
+    loadData();
+    window.addEventListener('storage', loadData);
+    return () => window.removeEventListener('storage', loadData);
   }, []);
 
   return (
@@ -55,124 +28,63 @@ export default function CustomerDashboard() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Welcome back, Alice. Here is an overview of your reported issues.</p>
+          <p className="text-muted-foreground mt-1">Welcome back, Alice. Track your maintenance requests here.</p>
         </div>
+
         <Link href="/customer/report-issue">
-          <Button className="gap-2 shadow-sm">
+          <Button className="gap-2 shadow-sm bg-green-700 hover:bg-green-800 text-white">
             <PlusCircle className="h-4 w-4" />
             Report New Issue
           </Button>
         </Link>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {/* Active Issues Card */}
-        <Card className="hover:border-primary/50 transition-colors">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Issues</CardTitle>
             <AlertTriangle className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="flex justify-between items-end">
-              <div>
-                <div className="text-2xl font-bold text-primary">
-                  {allIssues.filter(i => i.status === "Open").length}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">Issues currently open</p>
-              </div>
-              <div className="h-[40px] w-[80px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={activeIssuesData}>
-                    <Line type="monotone" dataKey="value" stroke="#16a34a" strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+            <div className="text-2xl font-bold text-primary">
+              {allIssues.filter(i => i.status === "Open" || i.status === "In Progress" || i.status === "Assigned").length}
             </div>
           </CardContent>
         </Card>
-
-        {/* In Progress Card */}
-        <Card className="hover:border-primary/50 transition-colors">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-            <Clock className="h-4 w-4 text-blue-500" />
+            <CardTitle className="text-sm font-medium">Resolved</CardTitle>
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="flex justify-between items-end">
-              <div>
-                <div className="text-2xl font-bold text-blue-500">
-                  {allIssues.filter(i => i.status === "In Progress").length}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">Being worked on</p>
-              </div>
-              <div className="h-[40px] w-[80px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={inProgressData}>
-                    <Bar dataKey="value" fill="#3b82f6" radius={[2, 2, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Resolved Card */}
-        <Card className="hover:border-primary/50 transition-colors">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Resolved (Last 30 Days)</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-end">
-              <div>
-                <div className="text-2xl font-bold">
-                  {allIssues.filter(i => i.status === "Resolved").length}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">Successfully closed</p>
-              </div>
-              <div className="h-[40px] w-[80px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={resolvedData}>
-                    <Line type="step" dataKey="value" stroke="#64748b" strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+            <div className="text-2xl font-bold text-green-500">
+              {allIssues.filter(i => i.status === "Resolved").length}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <h2 className="text-xl font-semibold mt-8 mb-4">Recent Issues</h2>
+      <h2 className="text-xl font-semibold mt-8 mb-4">Your Recent Issues</h2>
       <div className="grid gap-4">
         {allIssues.length === 0 ? (
-          <p className="text-slate-500 italic">No issues reported yet.</p>
+          <p className="text-slate-500 italic text-center py-10">No issues reported yet.</p>
         ) : (
           allIssues.map((issue) => (
             <Card key={issue.id} className="overflow-hidden hover:shadow-md transition-shadow">
               <div className="flex flex-col md:flex-row md:items-center justify-between p-6 gap-4">
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-muted-foreground">{issue.id}</span>
-                    <Badge variant={issue.status === "Open" ? "destructive" : issue.status === "Resolved" ? "secondary" : "default"}>
+                    <Badge variant={issue.status === "Resolved" ? "secondary" : "default"}>
                       {issue.status}
                     </Badge>
-                    <Badge variant="outline" className="text-xs">{issue.priority} Priority</Badge>
                   </div>
                   <h3 className="font-semibold text-lg">{issue.title}</h3>
-                  <p className="text-sm text-muted-foreground max-w-2xl line-clamp-2">
-                    {issue.description}
+                  <p className="text-sm text-muted-foreground">
+                    Assigned to: {issue.assigneeName || "Pending Assignment..."}
                   </p>
-                  <div className="text-xs text-muted-foreground flex gap-4 mt-2">
-                    <span>Project: {issue.projectName}</span>
-                    <span>Location: {issue.location}</span>
-                  </div>
                 </div>
-                <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-2">
-                  <span className="text-xs text-muted-foreground">
-                    Reported {new Date(issue.createdAt).toLocaleDateString()}
-                  </span>
-                  <Button variant="outline" size="sm">View Details</Button>
-                </div>
+                <Button variant="outline" size="sm">View Details</Button>
               </div>
             </Card>
           ))
