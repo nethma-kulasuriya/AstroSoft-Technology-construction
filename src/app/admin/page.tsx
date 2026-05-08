@@ -67,7 +67,7 @@ export default function AdminDashboard() {
     {
       name: "In Progress",
       value: allIssues.filter(i => i.status === "In Progress").length,
-      color: "#3b82f6",
+      color: "#fddf37ff", //yellow
       data: [
         { name: "In Progress", value: allIssues.filter(i => i.status === "In Progress").length },
         { name: "Remaining", value: totalCount - allIssues.filter(i => i.status === "In Progress").length }

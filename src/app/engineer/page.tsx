@@ -54,7 +54,7 @@ export default function EngineerDashboard() {
     {
       name: "My Pending",
       value: myAssignedTasks.filter(i => i.status === "Assigned" || i.status === "In Progress").length,
-      color: "#3b82f6", // Blue
+      color: "#fbc041ff", //yellow
       data: [
         { name: "Active", value: myAssignedTasks.filter(i => i.status === "Assigned" || i.status === "In Progress").length },
         { name: "Remaining", value: totalMyTasks - myAssignedTasks.filter(i => i.status === "Assigned" || i.status === "In Progress").length }

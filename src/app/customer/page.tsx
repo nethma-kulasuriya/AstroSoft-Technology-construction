@@ -41,7 +41,7 @@ export default function CustomerDashboard() {
     {
       name: "Active",
       value: allIssues.filter(i => i.status === "Open" || i.status === "In Progress" || i.status === "Assigned").length,
-      color: "#3b82f6", // Blue
+      color: "#fdd537ff", // yellow
       data: [
         { name: "Active", value: allIssues.filter(i => i.status === "Open" || i.status === "In Progress" || i.status === "Assigned").length },
         { name: "Remaining", value: totalMyIssues - allIssues.filter(i => i.status === "Open" || i.status === "In Progress" || i.status === "Assigned").length }
