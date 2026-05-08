@@ -1,6 +1,19 @@
 export type IssueStatus = "Open" | "In Progress" | "Resolved" | "Closed";
 export type IssuePriority = "Low" | "Medium" | "High" | "Critical";
 
+export interface Engineer {
+  id: string;
+  name: string;
+  specialization: string;
+}
+
+export const mockEngineers: Engineer[] = [
+  { id: "u3", name: "Charlie Davis", specialization: "Safety & Structural" },
+  { id: "u4", name: "Diana Evans", specialization: "Logistics & Plumbing" },
+  { id: "u6", name: "Sunil Perera", specialization: "Electrical" },
+  { id: "u7", name: "Arjun Silva", specialization: "HVAC" },
+];
+
 export interface Issue {
   id: string;
   title: string;
@@ -15,6 +28,7 @@ export interface Issue {
   assigneeId?: string;
   assigneeName?: string;
   location: string;
+
 }
 
 export interface Project {

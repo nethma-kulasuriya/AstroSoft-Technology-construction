@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,82 +9,77 @@ import { mockIssues } from "@/src/lib/mock-data";
 import { CheckCircle2, AlertTriangle, Clock } from "lucide-react";
 
 export default function EngineerDashboard() {
-  const assignedIssues = mockIssues.filter(issue => issue.assigneeId === "u3" || issue.status === "Open");
+  const [allIssues, setAllIssues] = useState([]);
+
+  useEffect(() => {
+    // Reload data every time to see Admin's changes
+    const storedIssues = JSON.parse(localStorage.getItem("demo_issues") || "[]");
+
+    // Filter logic: Show jobs specifically assigned to Charlie (u3) OR unassigned Open jobs
+    const combined = [...storedIssues, ...mockIssues].filter(
+      issue => issue.assigneeId === "u3" || issue.status === "Open"
+    );
+
+    setAllIssues(combined);
+  }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Engineer Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Manage your assigned site issues and update statuses.</p>
+        <h1 className="text-3xl font-bold tracking-tight">Engineer Dashboard (Charlie Davis)</h1>
+        <p className="text-muted-foreground mt-1">Viewing your workload and site-wide open alerts[cite: 98].</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">My Open Tasks</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-destructive" />
+            <CardTitle className="text-sm font-medium">My Assigned Jobs</CardTitle>
+            <Clock className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
+            <div className="text-2xl font-bold text-blue-500">
+              {allIssues.filter(i => i.assigneeId === "u3").length}
+            </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-            <Clock className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed This Week</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">8</div>
-          </CardContent>
-        </Card>
+        {/* ... keep other status cards ... */}
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Assigned & Open Issues</CardTitle>
+          <CardTitle>Task Queue</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
-                <TableHead>Project</TableHead>
                 <TableHead>Issue</TableHead>
+                <TableHead>Assignment Status</TableHead>
                 <TableHead>Priority</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {assignedIssues.map((issue) => (
+              {allIssues.map((issue) => (
                 <TableRow key={issue.id}>
                   <TableCell className="font-medium">{issue.id}</TableCell>
-                  <TableCell>{issue.projectName}</TableCell>
                   <TableCell>
                     <div className="font-medium">{issue.title}</div>
                     <div className="text-xs text-muted-foreground">{issue.location}</div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{issue.priority}</Badge>
+                    {issue.assigneeId === "u3" ? (
+                      <Badge className="bg-blue-100 text-blue-700">Assigned to Me</Badge>
+                    ) : (
+                      <Badge variant="outline">Unassigned</Badge>
+                    )}
                   </TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={issue.status === "Open" ? "destructive" : issue.status === "In Progress" ? "default" : "secondary"}
-                    >
-                      {issue.status}
-                    </Badge>
-                  </TableCell>
+                  <TableCell><Badge variant="outline">{issue.priority}</Badge></TableCell>
                   <TableCell className="text-right">
-                    <Button variant="secondary" size="sm">Update Status</Button>
+                    <Button variant={issue.assigneeId === "u3" ? "default" : "secondary"} size="sm">
+                      {issue.assigneeId === "u3" ? "Update Progress" : "Claim Task"}
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
